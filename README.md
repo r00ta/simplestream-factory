@@ -1,10 +1,32 @@
-# uv-fastapi-example
+# FastAPI + SQLAlchemy microservice template
 
-An example of a [FastAPI](https://github.com/fastapi/fastapi) application managed as a
-[uv](https://github.com/astral-sh/uv) project.
+This is r00ta's microservice template using uv, FastAPI and SQLAlchemy.  
 
-Based on the [multi-file example](https://fastapi.tiangolo.com/tutorial/bigger-applications/) from
-the FastAPI documentation.
+## init 
+
+Install uv, then 
+
+```commandline
+uv sync
+```
+
+## Add a new alembic migration
+
+```commandline
+uv run alembic -c app/db/alembic/alembic.in revision --autogenerate -m "new migration"
+```
+
+## Apply migrations
+
+```commandline
+uv run alembic -c app/db/alembic/alembic.ini upgrade head
+```
+
+## Run 
+
+```commandline
+uv run fastapi run app/main.py --port 8080 --host 0.0.0.0
+```
 
 ## License
 

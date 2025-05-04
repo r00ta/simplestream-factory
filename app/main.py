@@ -1,23 +1,16 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
-from .dependencies import get_query_token, get_token_header
-from .internal import admin
-from .routers import items, users
+from app.api.middlewares.db import TransactionMiddleware
+from app.api.middlewares.services import ServicesMiddleware
+from app.api.v1 import APIv1
+from app.db.base import Database
+from app.settings import Settings
 
-app = FastAPI(dependencies=[Depends(get_query_token)])
+app = FastAPI()
 
+settings = Settings()
+db = Database(settings.get_db_config(), echo=False)
 
-app.include_router(users.router)
-app.include_router(items.router)
-app.include_router(
-    admin.router,
-    prefix="/admin",
-    tags=["admin"],
-    dependencies=[Depends(get_token_header)],
-    responses={418: {"description": "I'm a teapot"}},
-)
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello Bigger Applications!"}
+app.add_middleware(ServicesMiddleware)
+app.add_middleware(TransactionMiddleware, db=db)
+APIv1.register(app.router)
