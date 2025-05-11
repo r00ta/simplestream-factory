@@ -24,21 +24,20 @@ def upgrade() -> None:
     op.create_table('simplestream_sources',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('index_url', sa.String(), nullable=False),
-    sa.Column('channel', sa.Enum('STABLE', 'CANDIDATE', 'DAILY', name='simplestreamchannel'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('simplestream_products',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('arch', sa.Enum('AMD64', 'ARM64', 'ARMHF', 'I386', 'PPC64EL', 'S390X', name='simplestreamproductarch'),nullable=False),
+    sa.Column('os', sa.String(), nullable=False),
     sa.Column('properties', sa.JSON(), nullable=True),
-    sa.Column('source_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['source_id'], ['simplestream_sources.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('simplestream_product_versions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('channel', sa.Enum('STABLE', 'CANDIDATE', 'DAILY', name='simplestreamchannel'), nullable=False),
     sa.Column('properties', sa.JSON(), nullable=True),
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['product_id'], ['simplestream_products.id'], ),

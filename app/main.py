@@ -1,9 +1,13 @@
 import logging
+import os
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
 from app.api.middlewares.db import TransactionMiddleware
 from app.api.middlewares.services import ServicesMiddleware
+from app.api.static import APIstatic
 from app.api.v1 import APIv1
 from app.db.base import Database, SessionProvider
 from app.services.collection import ServiceCollection
@@ -21,6 +25,16 @@ db = Database(settings.get_db_config(), echo=False)
 
 app.add_middleware(ServicesMiddleware)
 app.add_middleware(TransactionMiddleware, db=db)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/assets", StaticFiles(directory=os.path.join(os.getcwd(), "dist", "assets")), name="static")
+APIstatic.register(app.router)
 APIv1.register(app.router)
 
 @app.on_event("startup")
@@ -35,13 +49,13 @@ async def remove_expired_tokens_task() -> None:
             for source in sources.items:
                 manifest = await parser.download(source.index_url)
                 for product_name, manifest_product in manifest.products.items():
-                    product = await services.simplestream_product.get_by_name(source.id, product_name)
+                    product = await services.simplestream_product.get_by_name(product_name)
                     if product is None:
                         product = await services.simplestream_product.create(
                             name=product_name,
                             arch=manifest_product.arch,
+                            os=manifest_product.os,
                             properties=manifest_product.properties,
-                            source=source
                         )
                         logger.info(f"Product {product.name} has been created")
                     for version_name, manifest_version in manifest_product.versions.items():
@@ -50,9 +64,9 @@ async def remove_expired_tokens_task() -> None:
                             productversion = await services.simplestream_productversion.create(
                                 name=version_name,
                                 properties=manifest_version,
-                                product=product
+                                product=product,
+                                channel=manifest_product.channel
                             )
                             logger.info(f"Version {productversion.name} for product {product.name} has been created")
-
     except Exception as e:
         print(e)

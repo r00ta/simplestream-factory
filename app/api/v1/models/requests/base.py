@@ -1,7 +1,7 @@
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-DEFAULT_PAGE_SIZE = 20
+DEFAULT_PAGE_SIZE = 500
 MAX_PAGE_SIZE = 1000
 
 

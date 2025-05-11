@@ -64,11 +64,13 @@ class SimplestreamProductVersionService(BaseService[SimplestreamProductVersion])
                      name: str,
                      properties: dict,
                      product: SimplestreamProduct,
+                     channel: SimplestreamChannel
                      ) -> SimplestreamProductVersion:
         simplestreamproductversion = SimplestreamProductVersion(
             name=name,
             properties=properties,
-            product=product
+            product=product,
+            channel=channel
         )
         self.session.add(simplestreamproductversion)
         return simplestreamproductversion

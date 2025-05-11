@@ -42,6 +42,7 @@ class SimplestreamProductVersion(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     properties = Column(JSON, default={})
+    channel = Column(Enum(SimplestreamChannel), nullable=False)
 
     product_id = Column(Integer, ForeignKey("simplestream_products.id"), nullable=False)
     product = relationship("SimplestreamProduct", back_populates="versions", lazy='raise')
@@ -52,10 +53,8 @@ class SimplestreamProduct(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     arch = Column(Enum(SimplestreamProductArch), nullable=False)
+    os = Column(String, nullable=False)
     properties = Column(JSON, default={})
-
-    source_id = Column(Integer, ForeignKey("simplestream_sources.id"), nullable=False)
-    source = relationship("SimplestreamSource", back_populates="products", lazy='raise')
 
     versions = relationship(
         "SimplestreamProductVersion",
@@ -70,12 +69,3 @@ class SimplestreamSource(Base):
 
     id = Column(Integer, primary_key=True)
     index_url = Column(String, nullable=False)
-    channel = Column(Enum(SimplestreamChannel), nullable=False)
-
-    products = relationship(
-        "SimplestreamProduct",
-        back_populates="source",
-        cascade="all, delete-orphan",
-        lazy='raise'
-    )
-

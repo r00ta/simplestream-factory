@@ -1,7 +1,7 @@
 import aiohttp
 from copy import deepcopy
 
-from app.models.entities import SimplestreamProductArch
+from app.models.entities import SimplestreamProductArch, SimplestreamChannel
 from app.simplestream.models import SimplestreamsSourceManifest, SimplestreamsProductManifest
 
 
@@ -15,8 +15,11 @@ class SimplestreamParser:
                 manifest_data = await response.json()
                 products = {}
                 for product_name in manifest_data["products"].keys():
-                    name = product_name
+                    label = manifest_data['products'][product_name]['label']
+                    channel = SimplestreamChannel(label.upper())
+                    name = product_name.replace(f"com.ubuntu.maas.{label}", "com.r00ta.spaghettihub.stable")
                     arch = SimplestreamProductArch(manifest_data["products"][product_name]["arch"].upper())
+                    os = manifest_data["products"][product_name]["os"]
                     properties = deepcopy(manifest_data["products"][product_name])
                     del properties["versions"]
                     versions = manifest_data["products"][product_name]["versions"]
@@ -24,6 +27,8 @@ class SimplestreamParser:
                         {
                             name: SimplestreamsProductManifest(
                                 arch=arch,
+                                channel=channel,
+                                os=os,
                                 properties=properties,
                                 versions=versions
                             )

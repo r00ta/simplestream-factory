@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import Depends
+from starlette.requests import Request
 
 from app.api.base import Handler, handler
 from app.api.middlewares.services import services
@@ -33,10 +34,12 @@ class SimplestreamManifestHandler(Handler):
     @handler(path="/simplestreamsmanifests", methods=["POST"])
     async def create_simplestreamsource(
         self,
+        request: Request,
         manifest_selection_request: ManifestSelectionRequest,
         services: ServiceCollection = Depends(services),
     ):
         selector_id = str(uuid.uuid4())
         simplestreamsource = await services.simplestream_manifest.create_selection(selector_id,
                                                                                    manifest_selection_request.version_ids)
-        return {"selector_id": selector_id}
+        base_url = str(request.base_url).rstrip("/")
+        return {"simplestream_url": f"{base_url}/v1/simplestreamsmanifests/{selector_id}/index.json"}
