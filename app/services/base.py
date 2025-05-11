@@ -1,11 +1,20 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
+from dataclasses import dataclass
+from typing import Generic, TypeVar, List
+
+from sqlalchemy import ColumnElement
 
 from app.db.base import SessionProvider
 from app.models.base import ListResult
 
 T = TypeVar("T")
 
+
+
+@dataclass
+class Query:
+    filters: List[ColumnElement] = None
+    sort: List[ColumnElement] = None
 
 class BaseService(ABC, Generic[T]):
     def __init__(self, session_provider: SessionProvider):
