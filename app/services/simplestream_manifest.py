@@ -1,5 +1,6 @@
 from typing import List
 
+import gnupg
 from sqlalchemy import func, select, insert
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.operators import eq
@@ -70,7 +71,7 @@ class SimplestreamManifetsService(BaseService[ManifestSelection]):
                 "com.r00ta.spaghettihub:stable:chupa:download.json": {
                     "datatype": "image-ids",
                     "format": "products:1.0",
-                    "path": "com.r00ta.spaghettihub:stable:chupa:download.json",
+                    "path": "streams/v1/com.r00ta.spaghettihub:stable:1:chupa:download.json",
                     "updated": format_datetime(datetime.now(timezone.utc)),
                     "products": [product.name for product in products]
                 }
@@ -80,14 +81,12 @@ class SimplestreamManifetsService(BaseService[ManifestSelection]):
     async def render_product(self, selector_id: str) -> dict:
         selections = await self.list_by_selector(selector_id)
         selections_ids = {selection.version_id for selection in selections}
-        print(selections_ids)
         products = await self._find_products(selector_id)
         products_response = {}
         for product in products:
             tmpproduct = product.properties
             tmpproduct["versions"] = {
                 version.name: version.properties for version in product.versions if version.id in selections_ids}
-            print(tmpproduct)
             products_response.update({product.name: tmpproduct})
 
         response = {}
