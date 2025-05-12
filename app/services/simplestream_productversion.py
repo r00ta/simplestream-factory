@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 
 from app.db.base import SessionProvider
 from app.models.base import ListResult
-from app.models.entities import SimplestreamChannel, SimplestreamProductVersion, SimplestreamSource, SimplestreamProduct
+from app.models.entities import SimplestreamChannel, SimplestreamProductVersion, SimplestreamProduct
 from app.services.base import BaseService, Query
 
 

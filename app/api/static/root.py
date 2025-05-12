@@ -1,7 +1,6 @@
 import os
 
 from starlette.responses import HTMLResponse
-from starlette.staticfiles import StaticFiles
 
 from app.api.base import Handler, handler
 

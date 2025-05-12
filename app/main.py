@@ -2,6 +2,7 @@ import logging
 import os
 
 from fastapi import FastAPI
+from fastapi_utils.tasks import repeat_every
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
@@ -12,8 +13,6 @@ from app.api.v1 import APIv1
 from app.db.base import Database, SessionProvider
 from app.services.collection import ServiceCollection
 from app.settings import Settings
-from fastapi_utils.tasks import repeat_every
-
 from app.simplestream.parser import SimplestreamParser
 
 logger = logging.getLogger()

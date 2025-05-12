@@ -1,20 +1,19 @@
+from datetime import datetime, timezone
+from email.utils import format_datetime
 from typing import List
 
-import gnupg
-from sqlalchemy import func, select, insert
+from sqlalchemy import select, insert
 from sqlalchemy.orm import selectinload
-from sqlalchemy.sql.operators import eq
 
 from app.db.base import SessionProvider
 from app.models.base import ListResult
-from app.models.entities import SimplestreamSource, SimplestreamChannel, SimplestreamProductVersion, ManifestSelection, \
+from app.models.entities import SimplestreamProductVersion, ManifestSelection, \
     SimplestreamProduct
-from app.services.base import BaseService, Query
+from app.services.base import BaseService
 from app.services.simplestream_product import SimplestreamProductService
 from app.services.simplestream_productversion import SimplestreamProductVersionService
 from app.services.simplestream_source import SimplestreamSourceService
-from datetime import datetime, timezone
-from email.utils import format_datetime
+
 
 class SimplestreamManifetsService(BaseService[ManifestSelection]):
     def __init__(self,
@@ -78,6 +77,18 @@ class SimplestreamManifetsService(BaseService[ManifestSelection]):
             }
         }
 
+    def _update_paths(self, data, channel):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if key == "path" and isinstance(value, str):
+                    data[key] = f"{channel}/{value}"
+                else:
+                    self._update_paths(value, channel)
+        elif isinstance(data, list):
+            for item in data:
+                self._update_paths(item, channel)
+        return data
+
     async def render_product(self, selector_id: str) -> dict:
         selections = await self.list_by_selector(selector_id)
         selections_ids = {selection.version_id for selection in selections}
@@ -85,8 +96,11 @@ class SimplestreamManifetsService(BaseService[ManifestSelection]):
         products_response = {}
         for product in products:
             tmpproduct = product.properties
-            tmpproduct["versions"] = {
-                version.name: version.properties for version in product.versions if version.id in selections_ids}
+            versions = {}
+            for version in product.versions:
+                version.properties = self._update_paths(version.properties, version.channel.value.lower())
+                versions[version.name] = version.properties
+            tmpproduct["versions"] = versions
             products_response.update({product.name: tmpproduct})
 
         response = {}

@@ -7,10 +7,7 @@ from starlette.responses import FileResponse
 
 from app.api.base import Handler, handler
 from app.api.middlewares.services import services
-from app.api.v1.models.requests.base import PaginationParams
 from app.api.v1.models.requests.simplestream_manifest import ManifestSelectionRequest
-from app.api.v1.models.requests.simplestream_source import SimplestreamSourceCreateRequest
-from app.api.v1.models.responses.simplestream_source import SimplestreamSourceResponse
 from app.services.collection import ServiceCollection
 
 
@@ -50,7 +47,7 @@ class SimplestreamManifestHandler(Handler):
     @handler(path="/v1/simplestreamsmanifests/{selector_id}/{tail:path}", methods=["GET"])
     async def get_asset(self, selector_id: str, tail: str):
         sanitized_tail = os.path.normpath(tail).lstrip(os.sep)
-        file_path = os.path.join("/tmp/images/", sanitized_tail)
+        file_path = os.path.join("/home/ubuntu/maas-images/", sanitized_tail)
         if not os.path.isfile(file_path):
             raise HTTPException(status_code=404, detail="File not found")
         return FileResponse(file_path)

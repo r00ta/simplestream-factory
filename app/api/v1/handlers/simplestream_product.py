@@ -3,10 +3,8 @@ from fastapi import Depends
 from app.api.base import Handler, handler
 from app.api.middlewares.services import services
 from app.api.v1.models.requests.base import PaginationParams
-from app.api.v1.models.requests.simplestream_source import SimplestreamSourceCreateRequest
 from app.api.v1.models.responses.simplestream_product import SimplestreamProductsResponse, SimplestreamProductResponse, \
     SimplestreamProductVersionResponse
-from app.api.v1.models.responses.simplestream_source import SimplestreamSourceResponse
 from app.services.collection import ServiceCollection
 
 

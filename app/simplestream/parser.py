@@ -1,5 +1,6 @@
-import aiohttp
 from copy import deepcopy
+
+import aiohttp
 
 from app.models.entities import SimplestreamProductArch, SimplestreamChannel
 from app.simplestream.models import SimplestreamsSourceManifest, SimplestreamsProductManifest

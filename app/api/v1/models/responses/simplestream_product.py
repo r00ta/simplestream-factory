@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from app.models.entities import SimplestreamChannel, SimplestreamProductArch
 
+
 class SimplestreamProductVersionResponse(BaseModel):
     id: int
     name: str

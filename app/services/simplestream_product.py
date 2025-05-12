@@ -3,7 +3,7 @@ from sqlalchemy.orm import selectinload
 
 from app.db.base import SessionProvider
 from app.models.base import ListResult
-from app.models.entities import SimplestreamChannel, SimplestreamProduct, SimplestreamProductArch, SimplestreamSource
+from app.models.entities import SimplestreamProduct, SimplestreamProductArch
 from app.services.base import BaseService
 
 
