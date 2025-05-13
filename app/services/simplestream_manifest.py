@@ -98,6 +98,8 @@ class SimplestreamManifetsService(BaseService[ManifestSelection]):
             tmpproduct = product.properties
             versions = {}
             for version in product.versions:
+                if version.id not in selections_ids:
+                    continue
                 version.properties = self._update_paths(version.properties, version.channel.value.lower())
                 versions[version.name] = version.properties
             tmpproduct["versions"] = versions
