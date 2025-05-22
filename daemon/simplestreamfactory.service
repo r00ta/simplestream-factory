@@ -1,0 +1,14 @@
+# Place me under /etc/systemd/system/spaghettihubserver.service
+[Unit]
+Description=Simplestream factory Service
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/simplestream-factory
+ExecStart=/bin/bash -c "./scripts/run.sh"
+Restart=always
+RestartSec=15
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

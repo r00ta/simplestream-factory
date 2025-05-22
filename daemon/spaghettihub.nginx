@@ -1,0 +1,32 @@
+upstream server_b {
+    server localhost:8081;
+}
+
+server {
+    listen 1443 ssl;
+    server_name images.spaghettihub.r00ta.com;
+
+    ssl_certificate REDACTED;
+    ssl_certificate_key REDACTED;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location ~ ^/v1/simplestreamsmanifests/[^/]+/stable/(.*)$ {
+        alias /maas-images/stable/$1;
+        autoindex off;
+        default_type application/octet-stream;
+    }
+
+    location ~ ^/v1/simplestreamsmanifests/[^/]+/candidate/(.*)$ {
+        alias /maas-images/candidate/$1;
+        autoindex off;
+        default_type application/octet-stream;
+    }
+
+    location / {
+        proxy_pass http://server_b;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

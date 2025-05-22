@@ -1,9 +1,8 @@
 import os
 import uuid
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from starlette.requests import Request
-from starlette.responses import FileResponse
 
 from app.api.base import Handler, handler
 from app.api.middlewares.services import services
@@ -39,15 +38,6 @@ class SimplestreamManifestHandler(Handler):
         services: ServiceCollection = Depends(services),
     ):
         selector_id = str(uuid.uuid4())
-        simplestreamsource = await services.simplestream_manifest.create_selection(selector_id,
-                                                                                   manifest_selection_request.version_ids)
+        await services.simplestream_manifest.create_selection(selector_id, manifest_selection_request.version_ids)
         base_url = str(request.base_url).rstrip("/")
         return {"simplestream_url": f"{base_url}/v1/simplestreamsmanifests/{selector_id}/streams/v1/index.json"}
-
-    @handler(path="/v1/simplestreamsmanifests/{selector_id}/{tail:path}", methods=["GET"])
-    async def get_asset(self, selector_id: str, tail: str):
-        sanitized_tail = os.path.normpath(tail).lstrip(os.sep)
-        file_path = os.path.join("/home/ubuntu/maas-images/", sanitized_tail)
-        if not os.path.isfile(file_path):
-            raise HTTPException(status_code=404, detail="File not found")
-        return FileResponse(file_path)
